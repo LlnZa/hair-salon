@@ -10,3 +10,5 @@ Werkzeug==2.0.1
 WTForms==2.3.3
 SQLAlchemy==1.4.23
 pytz==2023.3 
+gunicorn
+psyc
