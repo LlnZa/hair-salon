@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Салон красоты LINZA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Светлый режим */
+        :root {
+            /* Основные цвета */
+            --primary-color: #1e293b;
+            --secondary-color: #334155;
+            --accent-color: #2563eb;
+            
+            /* Фоны */
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --table-header-bg: #1e293b;
+            --table-row-bg: #ffffff;
+            --table-row-hover: #f1f5f9;
+            --modal-bg: #ffffff;
+            --dropdown-bg: #ffffff;
+            
+            /* Текст */
+            --text-color: #1e293b;
+            --text-light: #ffffff;
+            --text-muted: #64748b;
+            
+            /* Границы и тени */
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            
+            /* Кнопки */
+            --btn-primary-bg: #3b82f6;
+            --btn-primary-text: #000000;
+            --btn-danger-bg: #ef4444;
+            --btn-danger-text: #000000;
+        }
+
+        /* Темный режим */
+        [data-bs-theme="dark"] {
+            /* Основные цвета */
+            --primary-color: #0f172a;
+            --secondary-color: #1e293b;
+            --accent-color: #3b82f6;
+            
+            /* Фоны */
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --table-header-bg: #0f172a;
+            --table-row-bg: #1e293b;
+            --table-row-hover: #334155;
+            --modal-bg: #1e293b;
+            --dropdown-bg: #1e293b;
+            
+            /* Текст */
+            --text-color: #f8fafc;
+            --text-light: #f8fafc;
+            --text-muted: #cbd5e1;
+            
+            /* Границы и тени */
+            --border-color: #334155;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            
+            /* Кнопки */
+            --btn-primary-bg: #3b82f6;
+            --btn-primary-text: #ffffff;
+            --btn-danger-bg: #ef4444;
+            --btn-danger-text: #ffffff;
+        }
+
+        /* Общие стили */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        /* Переключатель темы */
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            margin: 0 15px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--text-light);
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--primary-color);
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .theme-switch i {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .theme-switch .bi-sun {
+            left: 8px;
+        }
+
+        .theme-switch .bi-moon {
+            right: 8px;
+        }
+
+        /* Шапка */
+        .navbar {
+            padding: 1rem;
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        
+        .navbar-brand {
+            color: var(--text-light) !important;
+            font-size: 1.4rem;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 400;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-1px);
+        }
+
+        .dropdown-menu {
+            background-color: var(--dropdown-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px var(--shadow-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .dropdown-item {
+            color: var(--text-color) !important;
+            padding: 0.7rem 1.5rem;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--accent-color);
+            color: var(--text-light) !important;
+        }
+
+        /* Основной контент */
+        main {
+            flex: 1;
+            padding: 3rem 0;
+        }
+
+        /* Карточки услуг */
+        .service-card {
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            overflow: hidden;
+            background-color: var(--card-bg);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px var(--shadow-color);
+        }
+
+        /* Общие стили для кнопок */
+        .btn {
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            min-width: 120px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Основная кнопка */
+        .btn-primary {
+            background-color: var(--btn-primary-bg) !important;
+            border-color: var(--btn-primary-bg) !important;
+            color: var(--btn-primary-text) !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        /* Вторичная кнопка */
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+            border-color: #475569;
+        }
+
+        /* Кнопка отмены/удаления */
+        .btn-danger {
+            background-color: var(--btn-danger-bg) !important;
+            border-color: var(--btn-danger-bg) !important;
+            color: var(--btn-danger-text) !important;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+            border-color: #b91c1c;
+        }
+
+        /* Кнопка успеха */
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: var(--text-light);
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            border-color: #059669;
+        }
+
+        /* Информационная кнопка */
+        .btn-info {
+            background-color: var(--info-color);
+            border-color: var(--info-color);
+            color: var(--text-light);
+        }
+
+        .btn-info:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        /* Футер */
+        footer {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 3rem 0;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        footer h5 {
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Контактная информация */
+        .contact-info {
+            margin: 1.5rem 0;
+        }
+        
+        .contact-info i {
+            margin-right: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        .contact-info p {
+            margin-bottom: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Социальные сети */
+        .social-links a {
+            color: var(--text-light);
+            margin: 0 0.8rem;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .service-card {
+                margin-bottom: 1.5rem;
+            }
+            
+            .navbar-collapse {
+                background-color: var(--primary-color);
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 1rem;
+            }
+
+            .navbar-nav {
+                margin-top: 1rem;
+            }
+        }
+
+        /* Алерты */
+        .alert {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--card-text);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .alert-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: var(--info-color);
+            color: var(--info-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        .alert.fade-out {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        /* Формы и поля ввода */
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--input-text);
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-label {
+            color: var(--card-text);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Фильтры в таблицах */
+        .filters-row {
+            background-color: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .filters-row label {
+            color: var(--card-text);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .filters-row .form-control,
+        .filters-row .form-select {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+        }
+
+        [data-bs-theme="dark"] .filters-row .form-control,
+        [data-bs-theme="dark"] .filters-row .form-select {
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            border-color: var(--input-border);
+        }
+
+        [data-bs-theme="dark"] .filters-row .form-control::placeholder,
+        [data-bs-theme="dark"] .filters-row .form-select::placeholder {
+            color: var(--input-placeholder);
+        }
+
+        /* Кнопки действий в таблице */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .action-buttons .btn {
+            padding: 0.4rem 1rem;
+            min-width: 120px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Кнопки фильтров */
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .filter-buttons .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.95rem;
+        }
+
+        /* Отступы для кнопок */
+        .btn + .btn {
+            margin-left: 0.5rem;
+        }
+
+        /* Адаптивность для фильтров */
+        @media (max-width: 768px) {
+            .filters-row {
+                padding: 1rem;
+            }
+
+            .filter-buttons {
+                margin-top: 1rem;
+                justify-content: flex-start;
+            }
+
+            .filter-buttons .btn {
+                flex: 1;
+            }
+        }
+
+        /* Стили для темного режима */
+        [data-bs-theme="dark"] {
+            --input-bg: #2c3e50;
+            --input-text: #ecf0f1;
+            --input-border: #34495e;
+            --input-placeholder: #95a5a6;
+        }
+
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            border-color: var(--input-border);
+        }
+
+        [data-bs-theme="dark"] .form-control:focus,
+        [data-bs-theme="dark"] .form-select:focus {
+            border-color: var(--accent-color);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+        }
+
+        [data-bs-theme="dark"] .form-label {
+            color: var(--text-light);
+        }
+
+        /* Стили для кнопок в темном режиме */
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            color: var(--text-light);
+            border-color: var(--text-light);
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        /* Модальные окна */
+        .modal-content {
+            background-color: var(--modal-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--card-text);
+        }
+
+        .modal-header {
+            background-color: var(--table-header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+
+        /* Таблицы */
+        .table {
+            background-color: var(--card-bg);
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color);
+        }
+
+        .table thead th {
+            background-color: var(--table-header-bg);
+            color: var(--text-light) !important;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .table tbody td {
+            color: var(--text-color) !important;
+            border-color: var(--border-color);
+        }
+
+        .table tbody tr {
+            background-color: var(--table-row-bg);
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--table-row-hover);
+        }
+
+        /* Статусы и бейджи */
+        .badge {
+            color: var(--status-text);
+        }
+
+        .badge-primary {
+            background-color: var(--primary-color);
+        }
+
+        .badge-success {
+            background-color: #2ecc71;
+        }
+
+        .badge-warning {
+            background-color: #f1c40f;
+        }
+
+        .badge-danger {
+            background-color: var(--accent-color);
+        }
+
+        /* Выпадающие списки */
+        .form-select option {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+        }
+
+        /* Заголовки форм */
+        .form-header {
+            color: var(--card-text);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+        }
+
+        /* Подсказки и вспомогательный текст */
+        .form-text {
+            color: var(--card-text);
+            opacity: 0.8;
+        }
+
+        /* Обязательные поля */
+        .required::after {
+            content: "*";
+            color: var(--accent-color);
+            margin-left: 4px;
+        }
+
+        /* Стили для datepicker и timepicker */
+        .flatpickr-calendar {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        .flatpickr-calendar .flatpickr-day {
+            color: var(--card-text);
+        }
+
+        .flatpickr-calendar .flatpickr-day.selected {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--text-light);
+        }
+
+        /* Стили для валидации форм */
+        .was-validated .form-control:invalid,
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-repeat: no-repeat;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .invalid-feedback {
+            color: #dc3545;
+        }
+
+        /* Дополнительные стили для улучшения читаемости */
+        .text-muted {
+            color: var(--text-color) !important;
+            opacity: 0.7;
+        }
+
+        /* Стили для графиков и аналитики */
+        .chart-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .chart-title {
+            color: var(--card-text);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Стили для статистических карточек */
+        .stats-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats-card-title {
+            color: var(--card-text);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-card-value {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Белые карточки в темном режиме */
+        [data-bs-theme="dark"] .bg-white {
+            background-color: var(--card-bg) !important;
+            color: var(--card-text) !important;
+        }
+
+        /* Формы в таблицах */
+        .table .form-control, 
+        .table .form-select {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-color: var(--input-border);
+        }
+
+        /* Кнопки в таблицах */
+        .table .btn {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Статусы в таблицах */
+        .table .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .table .status-active {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        [data-bs-theme="dark"] .table .status-active {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border-color: #4ade80;
+        }
+
+        .table .status-pending {
+            background-color: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+            border: 1px solid #eab308;
+        }
+
+        [data-bs-theme="dark"] .table .status-pending {
+            background-color: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+            border-color: #fde047;
+        }
+
+        /* Таблицы в темном режиме */
+        [data-bs-theme="dark"] .table {
+            color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .table thead th {
+            background-color: var(--table-header-bg);
+            color: var(--text-light);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        [data-bs-theme="dark"] .table tbody tr {
+            background-color: var(--table-row-bg);
+            color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .table tbody tr:hover {
+            background-color: var(--table-row-hover);
+        }
+
+        [data-bs-theme="dark"] .table td,
+        [data-bs-theme="dark"] .table th {
+            color: var(--text-color);
+        }
+
+        /* Дропдауны в темном режиме */
+        [data-bs-theme="dark"] .dropdown-menu {
+            background-color: var(--dropdown-bg);
+            border-color: var(--border-color);
+        }
+
+        [data-bs-theme="dark"] .dropdown-item {
+            color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background-color: var(--accent-color);
+            color: var(--text-light) !important;
+        }
+
+        [data-bs-theme="dark"] .dropdown-divider {
+            border-color: var(--border-color);
+        }
+
+        /* Навбар в темном режиме */
+        [data-bs-theme="dark"] .navbar {
+            background-color: var(--primary-color) !important;
+        }
+
+        [data-bs-theme="dark"] .nav-link {
+            color: var(--text-light) !important;
+        }
+
+        [data-bs-theme="dark"] .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        /* Карточки в темном режиме */
+        [data-bs-theme="dark"] .card {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .card-header {
+            background-color: var(--table-header-bg);
+            border-bottom-color: var(--border-color);
+        }
+
+        /* Кнопки в темном режиме */
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            color: var(--text-light);
+            border-color: var(--text-light);
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        /* Статусы в темном режиме */
+        [data-bs-theme="dark"] .status {
+            border-color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .status-active {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border-color: #22c55e;
+        }
+
+        [data-bs-theme="dark"] .status-pending {
+            background-color: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+            border-color: #eab308;
+        }
+
+        /* Текст в темном режиме */
+        [data-bs-theme="dark"] {
+            color-scheme: dark;
+        }
+
+        [data-bs-theme="dark"] .table {
+            color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .dropdown-item {
+            color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            color: var(--text-color);
+        }
+
+        [data-bs-theme="dark"] .card {
+            color: var(--text-color);
+        }
+
+        /* Стили для select и option */
+        .form-select {
+            background-color: var(--input-bg);
+            color: var(--text-color) !important;
+            border: 1px solid var(--input-border);
+        }
+
+        .form-select option {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            padding: 0.5rem;
+        }
+
+        [data-bs-theme="dark"] .form-select {
+            background-color: var(--input-bg);
+            color: var(--text-light) !important;
+            border-color: var(--input-border);
+        }
+
+        [data-bs-theme="dark"] .form-select option {
+            background-color: var(--input-bg);
+            color: var(--text-light);
+        }
+
+        /* Кнопки в таблицах */
+        .table .btn-primary {
+            background-color: var(--btn-primary-bg) !important;
+            border-color: var(--btn-primary-bg) !important;
+            color: var(--btn-primary-text) !important;
+        }
+
+        .table .btn-danger {
+            background-color: var(--btn-danger-bg) !important;
+            border-color: var(--btn-danger-bg) !important;
+            color: var(--btn-danger-text) !important;
+        }
+
+        /* Кнопки действий */
+        .action-buttons .btn {
+            font-weight: 500;
+            min-width: 120px;
+        }
+
+        .action-buttons .btn-primary {
+            background-color: var(--btn-primary-bg) !important;
+            border-color: var(--btn-primary-bg) !important;
+            color: var(--btn-primary-text) !important;
+        }
+
+        .action-buttons .btn-danger {
+            background-color: var(--btn-danger-bg) !important;
+            border-color: var(--btn-danger-bg) !important;
+            color: var(--btn-danger-text) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационное меню -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}" style="font-family: 'Montserrat', sans-serif; font-size: 24px; letter-spacing: 2px; text-transform: uppercase;">LINZA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.роль in ['admin', 'owner'] %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                    Администрирование
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_services') }}">Услуги</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_employees') }}">Сотрудники</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_branches') }}">Филиалы</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('clients') }}">Клиенты</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        {% if current_user.роль in ['accountant', 'owner'] %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="accountingDropdown" role="button" data-bs-toggle="dropdown">
+                                    Бухгалтерия
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('accountant_dashboard') }}">Панель управления</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('analytics') }}">Аналитика</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('expenses') }}">Расходы</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('salary') }}">Зарплаты</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('reports') }}">Отчеты</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('payments') }}">Платежи</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        {% if current_user.роль in ['admin', 'employee', 'owner'] %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('appointments') }}">Записи</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('services') }}">Услуги</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('branches') }}">Филиалы</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="nav-link">{{ current_user.имя }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">Выйти</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">Войти</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">Регистрация</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show mt-3">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Контакты</h5>
+                    <div class="contact-info">
+                        <p><i class="bi bi-telephone"></i> +7 993 636 92 77</p>
+                        <p><i class="bi bi-envelope"></i> dovar.m@yandex.ru</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5>Часы работы</h5>
+                    <p>Пн-Пт: 10:00 - 21:00</p>
+                    <p>Сб: 10:00 - 17:00</p>
+                    <p>Вс: выходной</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Мы в соцсетях</h5>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-telegram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col text-center">
+                    <p class="text-muted">© 2025 Салон красоты LINZA. Все права защищены.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Функция для установки темы
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+            document.getElementById('theme-toggle').checked = theme === 'dark';
+        }
+
+        // Автоматическое скрытие алертов
+        function setupAlerts() {
+            const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 300);
+                }, 3000);
+            });
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+
+            // Настройка алертов
+            setupAlerts();
+
+            // Обработчик переключения темы
+            document.getElementById('theme-toggle').addEventListener('change', (e) => {
+                const theme = e.target.checked ? 'dark' : 'light';
+                setTheme(theme);
+                
+                document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+                setTimeout(() => {
+                    document.body.style.transition = '';
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить новую услугу{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Добавить новую услугу</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('add_service') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="mb-3">
+                            <label for="название" class="form-label">Название услуги <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="название" name="название" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="описание" class="form-label">Описание</label>
+                            <textarea class="form-control" id="описание" name="описание" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="базовая_цена" class="form-label">Базовая цена (₽) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="базовая_цена" name="базовая_цена" required 
+                                       placeholder="Например: 1000 или 1000.50">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="категория" class="form-label">Категория <span class="text-danger">*</span></label>
+                                <select class="form-select" id="категория" name="категория" required>
+                                    <option value="" selected disabled>Выберите категорию</option>
+                                    <option value="унисекс">Унисекс</option>
+                                    <option value="мужская">Мужская</option>
+                                    <option value="женская">Женская</option>
+                                    <option value="детская">Детская</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin_services') }}" class="btn btn-secondary me-md-2">Отмена</a>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать сотрудника{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Редактирование сотрудника</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ url_for('edit_employee', employee_id=employee.сотрудник_id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Логин <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ employee.логин }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Оставьте пустым, чтобы не менять">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Фамилия <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ employee.фамилия }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">Имя <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ employee.имя }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="position" class="form-label">Должность <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="position" name="position" value="{{ employee.должность }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Роль в системе <span class="text-danger">*</span></label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="employee" {% if employee.роль == 'employee' %}selected{% endif %}>Сотрудник</option>
+                                <option value="hairdresser" {% if employee.роль == 'hairdresser' %}selected{% endif %}>Парикмахер</option>
+                                <option value="admin" {% if employee.роль == 'admin' %}selected{% endif %}>Администратор</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="branch_id" class="form-label">Филиал <span class="text-danger">*</span></label>
+                            <select class="form-select" id="branch_id" name="branch_id" required>
+                                <option value="">-- Выберите филиал --</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.филиал_id }}" {% if employee.филиал_id == branch.филиал_id %}selected{% endif %}>{{ branch.название }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="hire_date" class="form-label">Дата приема на работу <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="hire_date" name="hire_date" value="{{ employee.дата_приёма.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('admin_employees') }}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

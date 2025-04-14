@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить запись{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Добавить запись</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="mb-3">
+                            <label for="клиент_id" class="form-label">Клиент <span class="text-danger">*</span></label>
+                            <select class="form-select" id="клиент_id" name="клиент_id" required>
+                                <option value="" selected disabled>Выберите клиента</option>
+                                {% for client in clients %}
+                                    <option value="{{ client.клиент_id }}">{{ client.фамилия }} {{ client.имя }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="услуга_id" class="form-label">Услуга <span class="text-danger">*</span></label>
+                            <select class="form-select" id="услуга_id" name="услуга_id" required>
+                                <option value="" selected disabled>Выберите услугу</option>
+                                {% for service in services %}
+                                    <option value="{{ service.услуга_id }}">{{ service.название_услуги }} ({{ service.базовая_цена }} ₽)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="сотрудник_id" class="form-label">Мастер <span class="text-danger">*</span></label>
+                            <select class="form-select" id="сотрудник_id" name="сотрудник_id" required>
+                                <option value="" selected disabled>Выберите мастера</option>
+                                {% for employee in employees %}
+                                    <option value="{{ employee.сотрудник_id }}">{{ employee.фамилия }} {{ employee.имя }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="филиал_id" class="form-label">Филиал <span class="text-danger">*</span></label>
+                            <select class="form-select" id="филиал_id" name="филиал_id" required>
+                                <option value="" selected disabled>Выберите филиал</option>
+                                {% for branch in branches %}
+                                    <option value="{{ branch.филиал_id }}">{{ branch.название }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="дата_визита" class="form-label">Дата <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="дата_визита" name="дата_визита" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="время_визита" class="form-label">Время <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="время_визита" name="время_визита" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="примечание" class="form-label">Примечание</label>
+                            <textarea class="form-control" id="примечание" name="примечание" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('appointments') }}" class="btn btn-secondary me-md-2">Отмена</a>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set min date to today
+    const dateInput = document.getElementById('дата_визита');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+    
+    // Set time input step to 30 minutes
+    const timeInput = document.getElementById('время_визита');
+    timeInput.step = "1800"; // 30 minutes in seconds
+});
+</script>
+{% endblock %} 

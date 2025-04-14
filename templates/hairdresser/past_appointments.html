@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}История моих записей{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>История записей</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('hairdresser_appointments') }}" class="btn btn-outline-primary">
+                <i class="fas fa-calendar"></i> Текущие записи
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category else 'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-body">
+            {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Дата и время</th>
+                                <th>Клиент</th>
+                                <th>Услуга</th>
+                                <th>Филиал</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                                <tr class="{% if appointment.статус == 'отменено' %}table-danger{% elif appointment.статус == 'выполнено' %}table-success{% endif %}">
+                                    <td>{{ appointment.дата_визита.strftime('%d.%m.%Y %H:%M') }}</td>
+                                    <td>
+                                        {% set client = Клиенты.query.get(appointment.клиент_id) %}
+                                        {% if client %}
+                                            {{ client.фамилия }} {{ client.имя }}
+                                        {% else %}
+                                            <span class="text-muted">Клиент не найден</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% set service = Услуги.query.get(appointment.услуга_id) %}
+                                        {% if service %}
+                                            {{ service.название_услуги }}
+                                        {% else %}
+                                            <span class="text-muted">Услуга не найдена</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% set branch = Филиалы.query.get(appointment.филиал_id) %}
+                                        {% if branch %}
+                                            {{ branch.название }}
+                                        {% else %}
+                                            <span class="text-muted">Филиал не найден</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if appointment.статус == 'ожидает' %}
+                                            <span class="badge bg-warning text-dark">Ожидает</span>
+                                        {% elif appointment.статус == 'подтверждено' %}
+                                            <span class="badge bg-primary">Подтверждено</span>
+                                        {% elif appointment.статус == 'выполнено' %}
+                                            <span class="badge bg-success">Выполнено</span>
+                                        {% elif appointment.статус == 'отменено' %}
+                                            <span class="badge bg-danger">Отменено</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ appointment.статус }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('hairdresser_appointment_details', appointment_id=appointment.запись_id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Подробнее
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    У вас нет завершенных записей.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

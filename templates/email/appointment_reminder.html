@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Напоминание о записи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #fff3cd;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Напоминание о записи</h1>
+        </div>
+        <div class="content">
+            <p>Здравствуйте, {{ client.имя }} {{ client.фамилия }}!</p>
+            <p>Напоминаем, что через 45 минут у вас запланирована запись:</p>
+            
+            <h3>Детали записи:</h3>
+            <ul>
+                <li><strong>Услуга:</strong> {{ service.название }}</li>
+                <li><strong>Дата и время:</strong> {{ appointment.дата_визита.strftime('%d.%m.%Y %H:%M') }}</li>
+                <li><strong>Мастер:</strong> {{ employee.имя }} {{ employee.фамилия }}</li>
+                <li><strong>Филиал:</strong> {{ branch.название }}</li>
+                <li><strong>Адрес:</strong> {{ branch.адрес }}</li>
+            </ul>
+            
+            {% if appointment.примечание %}
+            <p><strong>Ваши примечания:</strong> {{ appointment.примечание }}</p>
+            {% endif %}
+            
+            <p>Пожалуйста, не опаздывайте на запись. Если вам нужно отменить или изменить запись, пожалуйста, свяжитесь с нами как можно скорее.</p>
+        </div>
+        <div class="footer">
+            <p>Это автоматическое сообщение, пожалуйста, не отвечайте на него.</p>
+        </div>
+    </div>
+</body>
+</html> 

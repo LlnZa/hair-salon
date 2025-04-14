@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Управление расходами{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Управление расходами</h2>
+    
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="type_filter" class="form-label">Тип расхода</label>
+                    <select name="type" id="type_filter" class="form-select">
+                        <option value="">Все типы</option>
+                        <option value="Аренда" {% if request.args.get('type') == 'Аренда' %}selected{% endif %}>Аренда</option>
+                        <option value="Коммунальные услуги" {% if request.args.get('type') == 'Коммунальные услуги' %}selected{% endif %}>Коммунальные услуги</option>
+                        <option value="Материалы" {% if request.args.get('type') == 'Материалы' %}selected{% endif %}>Материалы</option>
+                        <option value="Оборудование" {% if request.args.get('type') == 'Оборудование' %}selected{% endif %}>Оборудование</option>
+                        <option value="Прочее" {% if request.args.get('type') == 'Прочее' %}selected{% endif %}>Прочее</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="branch_filter" class="form-label">Филиал</label>
+                    <select name="branch" id="branch_filter" class="form-select">
+                        <option value="">Все филиалы</option>
+                        {% for branch in branches %}
+                        <option value="{{ branch.id }}" {% if request.args.get('branch')|int == branch.id %}selected{% endif %}>
+                            {{ branch.название }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="start_date" class="form-label">Дата с</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" 
+                           value="{{ request.args.get('start_date', '') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="end_date" class="form-label">Дата по</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" 
+                           value="{{ request.args.get('end_date', '') }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Применить фильтры</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Кнопка добавления -->
+    <div class="mb-3">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+            Добавить расход
+        </button>
+    </div>
+
+    <!-- Таблица расходов -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Тип</th>
+                    <th>Сумма</th>
+                    <th>Дата</th>
+                    <th>Филиал</th>
+                    <th>Описание</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.id }}</td>
+                    <td>{{ expense.тип }}</td>
+                    <td>{{ "%.2f"|format(expense.сумма) }} ₽</td>
+                    <td>{{ expense.дата.strftime('%d.%m.%Y') }}</td>
+                    <td>{{ expense.филиал.название if expense.филиал else 'Не указан' }}</td>
+                    <td>{{ expense.описание or '' }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editExpense({{ expense.id }})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteExpense({{ expense.id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Модальное окно добавления расхода -->
+<div class="modal fade" id="addExpenseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить расход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addExpenseForm" method="POST" action="{{ url_for('add_expense') }}">
+                    <div class="mb-3">
+                        <label for="type" class="form-label">Тип расхода</label>
+                        <select name="type" id="type" class="form-select" required>
+                            <option value="Аренда">Аренда</option>
+                            <option value="Коммунальные услуги">Коммунальные услуги</option>
+                            <option value="Материалы">Материалы</option>
+                            <option value="Оборудование">Оборудование</option>
+                            <option value="Прочее">Прочее</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Сумма</label>
+                        <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Дата</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="branch" class="form-label">Филиал</label>
+                        <select name="branch" id="branch" class="form-select">
+                            <option value="">Выберите филиал</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.название }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" form="addExpenseForm" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования расхода -->
+<div class="modal fade" id="editExpenseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактировать расход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editExpenseForm" method="POST">
+                    <div class="mb-3">
+                        <label for="edit_type" class="form-label">Тип расхода</label>
+                        <select name="type" id="edit_type" class="form-select" required>
+                            <option value="Аренда">Аренда</option>
+                            <option value="Коммунальные услуги">Коммунальные услуги</option>
+                            <option value="Материалы">Материалы</option>
+                            <option value="Оборудование">Оборудование</option>
+                            <option value="Прочее">Прочее</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_amount" class="form-label">Сумма</label>
+                        <input type="number" step="0.01" class="form-control" id="edit_amount" name="amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_date" class="form-label">Дата</label>
+                        <input type="date" class="form-control" id="edit_date" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_branch" class="form-label">Филиал</label>
+                        <select name="branch" id="edit_branch" class="form-select">
+                            <option value="">Выберите филиал</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.название }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">Описание</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" form="editExpenseForm" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function editExpense(id) {
+    fetch(`/accountant/expenses/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('edit_type').value = data.тип;
+            document.getElementById('edit_amount').value = data.сумма;
+            document.getElementById('edit_date').value = data.дата;
+            document.getElementById('edit_branch').value = data.филиал_id || '';
+            document.getElementById('edit_description').value = data.описание || '';
+            
+            const form = document.getElementById('editExpenseForm');
+            form.action = `/accountant/expenses/edit/${id}`;
+            
+            new bootstrap.Modal(document.getElementById('editExpenseModal')).show();
+        });
+}
+
+function deleteExpense(id) {
+    if (confirm('Вы уверены, что хотите удалить этот расход?')) {
+        fetch(`/accountant/expenses/delete/${id}`, {
+            method: 'POST',
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Ошибка при удалении расхода');
+            }
+        });
+    }
+}
+
+// Установка текущей даты по умолчанию для поля даты при добавлении
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+});
+</script>
+{% endblock %} 

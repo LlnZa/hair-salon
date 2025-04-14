@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Панель управления бухгалтера{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Панель управления бухгалтера</h1>
+    
+    <!-- Основные показатели -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Доход за месяц</h5>
+                    <h2 class="card-text">{{ "{:,.2f}".format(monthly_income) }} ₽</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Расходы за месяц</h5>
+                    <h2 class="card-text">{{ "{:,.2f}".format(monthly_expenses) }} ₽</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card {% if profit > 0 %}bg-success{% else %}bg-danger{% endif %} text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Прибыль</h5>
+                    <h2 class="card-text">{{ "{:,.2f}".format(profit) }} ₽</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Быстрые действия</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('expenses') }}" class="btn btn-outline-primary w-100 mb-2">
+                                Управление расходами
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('salary') }}" class="btn btn-outline-primary w-100 mb-2">
+                                Зарплаты
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('analytics') }}" class="btn btn-outline-primary w-100 mb-2">
+                                Аналитика
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('reports') }}" class="btn btn-outline-primary w-100 mb-2">
+                                Отчеты
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика по услугам -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Статистика по услугам за месяц</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Услуга</th>
+                                    <th>Количество</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in service_stats %}
+                                <tr>
+                                    <td>{{ service.название_услуги }}</td>
+                                    <td>{{ service.count }}</td>
+                                    <td>{{ "{:,.2f}".format(service.total) }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('financialChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+    labels: JSON.parse('{{ chart_data.dates | tojson | safe }}'),
+    datasets: [{
+        label: 'Доходы',
+        data: JSON.parse('{{ chart_data.income | tojson | safe }}'),
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+    }, {
+        label: 'Расходы',
+        data: JSON.parse('{{ chart_data.expenses | tojson | safe }}'),
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1
+    }]
+},
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %} 

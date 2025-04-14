@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Управление филиалами{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Управление филиалами</h1>
+        <a href="{{ url_for('add_branch') }}" class="btn btn-primary">Добавить филиал</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название</th>
+                            <th>Адрес</th>
+                            <th>Телефон</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for branch in branches %}
+                        <tr>
+                            <td>{{ branch.филиал_id }}</td>
+                            <td>{{ branch.название }}</td>
+                            <td>{{ branch.адрес }}</td>
+                            <td>{{ branch.телефон }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('edit_branch', branch_id=branch.филиал_id) }}" class="btn btn-sm btn-outline-primary">Редактировать</a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ branch.филиал_id }}">Удалить</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">Нет филиалов</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for branch in branches %}
+<!-- Modal for delete confirmation -->
+<div class="modal fade" id="deleteModal{{ branch.филиал_id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ branch.филиал_id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel{{ branch.филиал_id }}">Подтверждение удаления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите удалить филиал "{{ branch.название }}" по адресу "{{ branch.адрес }}"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form action="{{ url_for('delete_branch', branch_id=branch.филиал_id) }}" method="POST" style="display: inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %} 

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Мои записи{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Мои записи</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if appointments %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Дата и время</th>
+                    <th>Клиент</th>
+                    <th>Услуга</th>
+                    <th>Филиал</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.дата_визита.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>{{ appointment.client.фамилия }} {{ appointment.client.имя }}</td>
+                    <td>{{ appointment.service.название_услуги }}</td>
+                    <td>{{ appointment.branch.название }}</td>
+                    <td>{{ appointment.статус }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>У вас пока нет записей.</p>
+    {% endif %}
+</div>
+{% endblock %} 

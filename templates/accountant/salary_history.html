@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}История зарплат - {{ employee.фамилия }} {{ employee.имя }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>История зарплат: {{ employee.фамилия }} {{ employee.имя }}</h2>
+        <a href="{{ url_for('salary') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Назад к списку
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Дата начала</th>
+                            <th>Базовая ставка</th>
+                            <th>Процент от выручки</th>
+                            <th>Дата установки</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for salary in salary_history %}
+                        <tr>
+                            <td>{{ salary.дата_начала.strftime('%d.%m.%Y') }}</td>
+                            <td>{{ "{:,.2f}".format(salary.базовая_ставка) }} ₽</td>
+                            <td>{{ salary.процент_от_выручки }}%</td>
+                            <td>{{ salary.дата_создания.strftime('%d.%m.%Y %H:%M') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">История зарплат отсутствует</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

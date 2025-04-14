@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Отчет по услугам{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Отчет по услугам</h2>
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="fas fa-print"></i> Печать
+        </button>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Период отчета</h5>
+            <p class="card-text">
+                С {{ start_date.strftime('%d.%m.%Y') }} по {{ end_date.strftime('%d.%m.%Y') }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Услуга</th>
+                            <th class="text-center">Количество</th>
+                            <th class="text-end">Общая сумма</th>
+                            <th class="text-end">Средний чек</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total_count = 0 %}
+                        {% set total_sum = 0 %}
+                        {% for row in data %}
+                            {% set total_count = total_count + row.count %}
+                            {% set total_sum = total_sum + row.total %}
+                            <tr>
+                                <td>{{ row.название_услуги }}</td>
+                                <td class="text-center">{{ row.count }}</td>
+                                <td class="text-end">{{ "{:,.2f}".format(row.total) }} ₽</td>
+                                <td class="text-end">{{ "{:,.2f}".format(row.total / row.count) }} ₽</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">Нет данных за выбранный период</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-info">
+                            <th>Итого:</th>
+                            <th class="text-center">{{ total_count }}</th>
+                            <th class="text-end">{{ "{:,.2f}".format(total_sum) }} ₽</th>
+                            <th class="text-end">{{ "{:,.2f}".format(total_sum / total_count if total_count > 0 else 0) }} ₽</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn-primary { display: none; }
+    .navbar { display: none; }
+    .container { width: 100%; max-width: 100%; }
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Отчет по доходам{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Отчет по доходам</h2>
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="fas fa-print"></i> Печать
+        </button>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Период отчета</h5>
+            <p class="card-text">
+                С {{ start_date.strftime('%d.%m.%Y') }} по {{ end_date.strftime('%d.%m.%Y') }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th class="text-end">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total = 0 %}
+                        {% for row in data %}
+                            {% set total = total + row.total %}
+                            <tr>
+                                <td>{{ row.date.strftime('%d.%m.%Y') }}</td>
+                                <td class="text-end">{{ "{:,.2f}".format(row.total) }} ₽</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="2" class="text-center">Нет данных за выбранный период</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-info">
+                            <th>Итого:</th>
+                            <th class="text-end">{{ "{:,.2f}".format(total) }} ₽</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn-primary { display: none; }
+    .navbar { display: none; }
+    .container { width: 100%; max-width: 100%; }
+}
+</style>
+{% endblock %} 

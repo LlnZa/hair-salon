@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Добавление сотрудника{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Добавление нового сотрудника</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Логин <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Фамилия <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">Имя <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Роль в системе <span class="text-danger">*</span></label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="employee">Сотрудник</option>
+                                <option value="hairdresser">Парикмахер</option>
+                                <option value="admin">Администратор</option>
+                                <option value="owner">Владелец</option>
+                                <option value="accountant">Бухгалтер</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="position" class="form-label">Должность <span class="text-danger">*</span></label>
+                            <select class="form-select" id="position" name="position" required>
+                                <option value="">-- Выберите должность --</option>
+                                <option value="Владелец">Владелец</option>
+                                <option value="Администратор">Администратор</option>
+                                <option value="Бухгалтер">Бухгалтер</option>
+                                <option value="Парикмахер">Парикмахер</option>
+                                <option value="Старший парикмахер">Старший парикмахер</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="branch_id" class="form-label">Филиал <span class="text-danger">*</span></label>
+                            <select class="form-select" id="branch_id" name="branch_id" required>
+                                <option value="">-- Выберите филиал --</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.филиал_id }}">{{ branch.название }} - {{ branch.адрес }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="+7XXXXXXXXXX" required>
+                            <small class="form-text text-muted">Введите номер телефона в формате +7XXXXXXXXXX</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="hire_date" class="form-label">Дата приёма на работу <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="hire_date" name="hire_date" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('admin_employees') }}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">Добавить сотрудника</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Устанавливаем максимальную дату на сегодня
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('hire_date').max = today;
+
+    const roleSelect = document.getElementById('role');
+    const positionSelect = document.getElementById('position');
+
+    roleSelect.addEventListener('change', function() {
+        const selectedRole = this.value;
+        
+        // Устанавливаем соответствующую должность
+        switch(selectedRole) {
+            case 'owner':
+                positionSelect.value = 'Владелец';
+                break;
+            case 'admin':
+                positionSelect.value = 'Администратор';
+                break;
+            case 'accountant':
+                positionSelect.value = 'Бухгалтер';
+                break;
+            case 'hairdresser':
+                positionSelect.value = 'Парикмахер';
+                break;
+            case 'employee':
+                positionSelect.value = 'Старший парикмахер';
+                break;
+        }
+    });
+});
+</script>
+{% endblock %} 

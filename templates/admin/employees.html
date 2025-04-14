@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Управление сотрудниками{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Управление сотрудниками</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('add_employee') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Добавить сотрудника
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-body">
+            {% if employees %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ФИО</th>
+                                <th>Логин</th>
+                                <th>Должность</th>
+                                <th>Роль</th>
+                                <th>Филиал</th>
+                                <th>Дата приема</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees %}
+                                <tr>
+                                    <td>{{ employee.сотрудник_id }}</td>
+                                    <td>{{ employee.фамилия }} {{ employee.имя }}</td>
+                                    <td>{{ employee.логин }}</td>
+                                    <td>{{ employee.должность }}</td>
+                                    <td>
+                                        {% if employee.роль == 'admin' %}
+                                            <span class="badge bg-danger">Администратор</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">Сотрудник</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if employee.филиал_id %}
+                                            {% for branch in branches %}
+                                                {% if branch.филиал_id == employee.филиал_id %}
+                                                    {{ branch.название }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">Не указан</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ employee.дата_приёма.strftime('%d.%m.%Y') }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('edit_employee', employee_id=employee.сотрудник_id) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ employee.сотрудник_id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Модальное окно для подтверждения удаления -->
+                                        <div class="modal fade" id="deleteModal{{ employee.сотрудник_id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ employee.сотрудник_id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel{{ employee.сотрудник_id }}">Подтверждение удаления</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Вы действительно хотите удалить сотрудника "{{ employee.фамилия }} {{ employee.имя }}"?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                        <form action="{{ url_for('delete_employee', employee_id=employee.сотрудник_id) }}" method="POST" style="display: inline;">
+                                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этого сотрудника?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Нет доступных сотрудников. <a href="{{ url_for('add_employee') }}">Добавить сотрудника</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="text-center">Удаление аккаунта</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Внимание!</h4>
+                        <p>Вы собираетесь удалить свой аккаунт. Это действие:</p>
+                        <ul>
+                            <li>Удалит все ваши данные</li>
+                            <li>Отменит все ваши записи</li>
+                            <li>Не может быть отменено</li>
+                        </ul>
+                        <hr>
+                        <p class="mb-0">Вы уверены, что хотите продолжить?</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('delete_account') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Да, удалить мой аккаунт</button>
+                            <a href="{{ url_for('profile') }}" class="btn btn-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

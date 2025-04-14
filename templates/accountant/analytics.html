@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Аналитика{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Аналитика</h1>
+        <div>
+            <a href="{{ url_for('export_analytics_excel') }}" class="btn btn-success me-2">
+                <i class="bi bi-file-excel"></i> Экспорт в Excel
+            </a>
+            <a href="{{ url_for('export_analytics_pdf') }}" class="btn btn-danger">
+                <i class="bi bi-file-pdf"></i> Экспорт в PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Доходы по месяцам -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Доходы по месяцам</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="monthlyIncomeChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Популярные услуги -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Популярные услуги</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Услуга</th>
+                                    <th>Количество</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in popular_services %}
+                                <tr>
+                                    <td>{{ service.название_услуги }}</td>
+                                    <td>{{ service.count }}</td>
+                                    <td>{{ "{:,.2f}".format(service.total) }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика по филиалам -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Статистика по филиалам</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Филиал</th>
+                                    <th>Записей</th>
+                                    <th>Доход</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for branch in branch_stats %}
+                                <tr>
+                                    <td>{{ branch.название }}</td>
+                                    <td>{{ branch.appointments_count }}</td>
+                                    <td>{{ "{:,.2f}".format(branch.total_income) }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Глобальные переменные с данными из Jinja2
+    var chartLabels = {{ monthly_income|map(attribute='month')|map('strftime', '%B %Y')|list|tojson|safe }};
+    var chartData = {{ monthly_income|map(attribute='total')|list|tojson|safe }};
+    
+    // Создание графика
+    const monthlyIncomeCtx = document.getElementById('monthlyIncomeChart')?.getContext('2d');
+    if (monthlyIncomeCtx) {
+        const chartConfig = {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Доход',
+                    data: chartData,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Динамика доходов по месяцам'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('ru-RU') + ' ₽';
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        new Chart(monthlyIncomeCtx, chartConfig);
+    } else {
+        console.error('Could not find monthly income chart canvas');
+    }
+</script>
+{% endblock %}
+{% endblock %}

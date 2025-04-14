@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Управление зарплатами{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Управление зарплатами сотрудников</h2>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Сотрудник</th>
+                    <th>Должность</th>
+                    <th>Текущая ставка</th>
+                    <th>% от выручки</th>
+                    <th>Записей за месяц</th>
+                    <th>Выручка за месяц</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in employee_stats %}
+                <tr>
+                    <td>{{ stat.фамилия }} {{ stat.имя }}</td>
+                    <td>{{ stat.должность }}</td>
+                    <td>
+                        {% if stat.сотрудник_id in current_salaries and current_salaries[stat.сотрудник_id] %}
+                            {{ "{:,.2f}".format(current_salaries[stat.сотрудник_id].базовая_ставка) }} ₽
+                        {% else %}
+                            Не установлена
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if stat.сотрудник_id in current_salaries and current_salaries[stat.сотрудник_id] %}
+                            {{ current_salaries[stat.сотрудник_id].процент_от_выручки }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </td>
+                    <td>{{ stat.appointments_count or 0 }}</td>
+                    <td>{{ "{:,.2f}".format(stat.total_income or 0) }} ₽</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#salaryModal{{ stat.сотрудник_id }}">
+                            Установить зарплату
+                        </button>
+                        <a href="{{ url_for('salary_history', employee_id=stat.сотрудник_id) }}" class="btn btn-info btn-sm">
+                            История
+                        </a>
+                    </td>
+                </tr>
+                
+                <!-- Модальное окно для установки зарплаты -->
+                <div class="modal fade" id="salaryModal{{ stat.сотрудник_id }}" tabindex="-1" aria-labelledby="salaryModalLabel{{ stat.сотрудник_id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="salaryModalLabel{{ stat.сотрудник_id }}">Установить зарплату: {{ stat.фамилия }} {{ stat.имя }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ url_for('set_salary', employee_id=stat.сотрудник_id) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="base_salary" class="form-label">Базовая ставка (₽)</label>
+                                        <input type="number" class="form-control" id="base_salary" name="base_salary" step="0.01" min="0" required
+                                               value="{{ current_salaries[stat.сотрудник_id].базовая_ставка if stat.сотрудник_id in current_salaries and current_salaries[stat.сотрудник_id] else '' }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="commission_percent" class="form-label">Процент от выручки (%)</label>
+                                        <input type="number" class="form-control" id="commission_percent" name="commission_percent" min="0" max="100" required
+                                               value="{{ current_salaries[stat.сотрудник_id].процент_от_выручки if stat.сотрудник_id in current_salaries and current_salaries[stat.сотрудник_id] else '0' }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="start_date" class="form-label">Дата начала действия</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" required
+                                               value="{{ today.strftime('%Y-%m-%d') }}">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

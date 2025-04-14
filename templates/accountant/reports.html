@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Формирование отчетов{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Формирование отчетов</h2>
+
+    <div class="row mt-4">
+        <!-- Отчет по доходам -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Отчет по доходам</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('generate_report', report_type='income') }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="income-start-date" class="form-label">Начальная дата</label>
+                            <input type="date" class="form-control" id="income-start-date" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="income-end-date" class="form-label">Конечная дата</label>
+                            <input type="date" class="form-control" id="income-end-date" name="end_date" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сформировать отчет</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Отчет по услугам -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Отчет по услугам</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('generate_report', report_type='services') }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="services-start-date" class="form-label">Начальная дата</label>
+                            <input type="date" class="form-control" id="services-start-date" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="services-end-date" class="form-label">Конечная дата</label>
+                            <input type="date" class="form-control" id="services-end-date" name="end_date" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Сформировать отчет</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Отчет по сотрудникам -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Отчет по сотрудникам</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('generate_report', report_type='employees') }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="employees-start-date" class="form-label">Начальная дата</label>
+                            <input type="date" class="form-control" id="employees-start-date" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="employees-end-date" class="form-label">Конечная дата</label>
+                            <input type="date" class="form-control" id="employees-end-date" name="end_date" required>
+                        </div>
+                        <button type="submit" class="btn btn-info">Сформировать отчет</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Быстрые отчеты -->
+    <div class="card mt-4">
+        <div class="card-header bg-warning">
+            <h5 class="card-title mb-0">Быстрые отчеты</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                            Отчет за сегодня
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='income', period='today') }}">По доходам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='services', period='today') }}">По услугам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='employees', period='today') }}">По сотрудникам</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                            Отчет за неделю
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='income', period='week') }}">По доходам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='services', period='week') }}">По услугам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='employees', period='week') }}">По сотрудникам</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                            Отчет за месяц
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='income', period='month') }}">По доходам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='services', period='month') }}">По услугам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='employees', period='month') }}">По сотрудникам</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                            Отчет за год
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='income', period='year') }}">По доходам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='services', period='year') }}">По услугам</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('quick_report', report_type='employees', period='year') }}">По сотрудникам</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Устанавливаем максимальную дату на сегодня для всех полей выбора даты
+    const today = new Date().toISOString().split('T')[0];
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(input => {
+        input.max = today;
+    });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Наши филиалы</h1>
+
+    <div class="row">
+        {% for branch in branches %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ branch.название }}</h5>
+                        <p class="card-text">
+                            <strong>Адрес:</strong> {{ branch.адрес }}<br>
+                            <strong>Телефон:</strong> {{ branch.телефон }}
+                        </p>
+                    </div>
+                    {% if current_user.is_authenticated and current_user.роль == 'client' %}
+                        <div class="card-footer">
+                            <a href="{{ url_for('book_service', service_id=1, branch_id=branch.филиал_id) }}" class="btn btn-primary">Записаться</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <p>На данный момент филиалы не добавлены.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

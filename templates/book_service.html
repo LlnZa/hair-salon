@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Запись на услугу{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Запись на услугу: {{ service.название_услуги }}</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                {% if not current_user.is_authenticated %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted">Данные для регистрации</h6>
+                        <p class="small text-muted">После записи вам будет отправлено письмо с данными для входа в личный кабинет</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">Имя <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Фамилия <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="form-text">На этот адрес будут отправлены данные для входа в личный кабинет</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="branch_id" class="form-label">Филиал <span class="text-danger">*</span></label>
+                            <select class="form-select" id="branch_id" name="branch_id" required>
+                                <option value="">-- Выберите филиал --</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.филиал_id }}">{{ branch.название }} - {{ branch.адрес }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="employee_id" class="form-label">Мастер <span class="text-danger">*</span></label>
+                            <select class="form-select" id="employee_id" name="employee_id" required>
+                                <option value="">-- Выберите мастера --</option>
+                                {% for employee in employees %}
+                                <option value="{{ employee.сотрудник_id }}">{{ employee.фамилия }} {{ employee.имя }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="visit_date" class="form-label">Дата и время визита <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="visit_date" name="visit_date" required>
+                            <div class="form-text">Рабочие часы: Пн-Пт 10:00-21:00, Сб 10:00-17:00, Вс - выходной</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Примечание</label>
+                            <textarea class="form-control" id="note" name="note" rows="3" placeholder="Дополнительные пожелания или комментарии"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('services') }}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">Записаться</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Устанавливаем минимальную дату на текущий момент
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    document.getElementById('visit_date').min = `${year}-${month}-${day}T${hours}:${minutes}`;
+});
+</script>
+{% endblock %} 

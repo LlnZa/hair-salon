@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Детали записи{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Информация о записи</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('hairdresser_appointments') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Назад к списку
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category else 'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Информация о записи</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">Дата и время:</th>
+                            <td>{{ appointment.дата_визита.strftime('%d.%m.%Y %H:%M') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Статус:</th>
+                            <td>
+                                {% if appointment.статус == 'ожидает' %}
+                                    <span class="badge bg-warning text-dark">Ожидает</span>
+                                {% elif appointment.статус == 'подтверждено' %}
+                                    <span class="badge bg-primary">Подтверждено</span>
+                                {% elif appointment.статус == 'выполнено' %}
+                                    <span class="badge bg-success">Выполнено</span>
+                                {% elif appointment.статус == 'отменено' %}
+                                    <span class="badge bg-danger">Отменено</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ appointment.статус }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Филиал:</th>
+                            <td>{{ branch.название }}</td>
+                        </tr>
+                        <tr>
+                            <th>Адрес:</th>
+                            <td>{{ branch.адрес }}</td>
+                        </tr>
+                        {% if appointment.примечание %}
+                        <tr>
+                            <th>Примечание:</th>
+                            <td>{{ appointment.примечание }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                    
+                    {% if appointment.статус == 'ожидает' or appointment.статус == 'подтверждено' %}
+                        <form action="{{ url_for('complete_appointment', appointment_id=appointment.запись_id) }}" method="post" class="mt-3">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Отметить как выполненную
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Информация о клиенте</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">ФИО:</th>
+                            <td>{{ client.фамилия }} {{ client.имя }} {{ client.отчество }}</td>
+                        </tr>
+                        <tr>
+                            <th>Телефон:</th>
+                            <td>{{ client.телефон }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ client.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Пол:</th>
+                            <td>{{ "Мужской" if client.пол == "М" else "Женский" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Информация об услуге</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">Название услуги:</th>
+                            <td>{{ service.название_услуги }}</td>
+                        </tr>
+                        <tr>
+                            <th>Описание:</th>
+                            <td>{{ service.описание }}</td>
+                        </tr>
+                        <tr>
+                            <th>Стоимость:</th>
+                            <td>{{ service.базовая_цена }} ₽</td>
+                        </tr>
+                        <tr>
+                            <th>Продолжительность:</th>
+                            <td>{{ service.продолжительность }} мин.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

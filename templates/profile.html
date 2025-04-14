@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Личный кабинет</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <h5>Информация о клиенте</h5>
+                        <p class="mb-0">Дата регистрации: {{ current_user.дата_регистрации.strftime('%d.%m.%Y') }}</p>
+                        <p class="mb-0">Очки лояльности: {{ current_user.очки_лояльности }}</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('profile') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="last_name" class="form-label">Фамилия</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ current_user.фамилия }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="first_name" class="form-label">Имя</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ current_user.имя }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="middle_name" class="form-label">Отчество</label>
+                                <input type="text" class="form-control" id="middle_name" name="middle_name" 
+                                       value="{{ current_user.отчество }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">Пол</label>
+                                <select class="form-select" id="gender" name="gender">
+                                    <option value="">Выберите пол</option>
+                                    <option value="мужской" {% if current_user.пол == 'мужской' %}selected{% endif %}>Мужской</option>
+                                    <option value="женский" {% if current_user.пол == 'женский' %}selected{% endif %}>Женский</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="birth_date" class="form-label">Дата рождения</label>
+                                <input type="date" class="form-control" id="birth_date" name="birth_date" 
+                                       value="{{ current_user.дата_рождения.strftime('%Y-%m-%d') if current_user.дата_рождения else '' }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       value="{{ current_user.телефон }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ current_user.email }}">
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <h5 class="mb-3">Смена пароля</h5>
+                    <form method="POST" action="{{ url_for('change_password') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Текущий пароль</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">Новый пароль</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Подтвердите новый пароль</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Изменить пароль</button>
+                        </div>
+                    </form>
+
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{{ url_for('delete_account') }}" class="btn btn-danger">Удалить аккаунт</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
