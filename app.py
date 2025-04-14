@@ -33,7 +33,7 @@ MAIL_SERVER=smtp.yandex.ru
 MAIL_PORT=465
 MAIL_USERNAME=dovar.m@yandex.ru
 MAIL_PASSWORD=hewnpqcyawexnqvy
-MAIL_USE_TLS=True '
+
 
 
 # Конфигурация Flask-Mail
