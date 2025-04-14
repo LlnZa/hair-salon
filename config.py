@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/barbershop_db')
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://hair_salon_user:ERa7fcyODXXoU7Nck30fEY9HJGejcSzN@dpg-cvue38a4d50c73atiucg-a/hair_salon_8vaf')
 if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
     SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://", 1)
 
