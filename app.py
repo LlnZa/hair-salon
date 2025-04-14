@@ -29,10 +29,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://hair_salon_user:ERa7fcyODXXoU7Nck30fEY9HJGejcSzN@dpg-cvue38a4d50c73atiucg-a/hair_salon_8vaf'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-MAIL_SERVER=smtp.yandex.ru
-MAIL_PORT=465
-MAIL_USERNAME=dovar.m@yandex.ru
-MAIL_PASSWORD=hewnpqcyawexnqvy
+
 
 
 
