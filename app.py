@@ -617,7 +617,11 @@ def profile():
         current_user.фамилия = request.form.get('last_name')
         current_user.имя = request.form.get('first_name')
         current_user.отчество = request.form.get('middle_name')
-        current_user.пол = request.form.get('gender')
+        gender = request.form.get('gender')
+        if gender not in ['М', 'Ж']:
+            flash('Неверное значение для пола. Выберите "М" или "Ж".')
+            return redirect(url_for('profile'))
+        current_user.пол = gender
         current_user.телефон = request.form.get('phone')
         current_user.email = request.form.get('email')
         
