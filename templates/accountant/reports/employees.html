@@ -42,7 +42,7 @@
                                 <td>{{ row.фамилия }} {{ row.имя }}</td>
                                 <td class="text-center">{{ row.appointments_count }}</td>
                                 <td class="text-end">{{ "{:,.2f}".format(row.total_income) }} ₽</td>
-                                <td class="text-end">{{ "{:,.2f}".format(row.total_income / row.appointments_count) }} ₽</td>
+                                <td class="text-end">{{ "{:,.2f}".format(row.total_income / row.appointments_count) if row.appointments_count else "0.00" }} ₽</td>
                             </tr>
                         {% else %}
                             <tr>
