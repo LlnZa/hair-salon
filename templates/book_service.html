@@ -104,3 +104,35 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %} 
+
+<script>
+function updateEmployees() {
+    var branchSelect = document.getElementById('branch_id');
+    var employeeSelect = document.getElementById('employee_id');
+    var branchId = branchSelect.value;
+    
+    // Если филиал не выбран, сбрасываем список мастеров
+    if(!branchId) {
+        employeeSelect.innerHTML = '<option value="">-- Выберите мастера --</option>';
+        return;
+    }
+    
+    fetch(`/get_employees/${branchId}`)
+      .then(response => response.json())
+      .then(data => {
+          // Очистить существующие опции
+          employeeSelect.innerHTML = '<option value="">-- Выберите мастера --</option>';
+          // Добавляем полученные данные
+          data.forEach(function(emp) {
+              var option = document.createElement('option');
+              option.value = emp.id;
+              option.text = emp.name;
+              employeeSelect.appendChild(option);
+          });
+      })
+      .catch(error => {
+          console.error('Error fetching employees:', error);
+      });
+}
+</script>
+
