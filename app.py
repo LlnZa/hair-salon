@@ -476,7 +476,7 @@ def book_service(service_id):
     
     # Получаем список филиалов и сотрудников для выбора
     branches = Филиалы.query.all()
-    employees = Сотрудники.query.filter_by(роль='hairdresser').all()
+    employees = Сотрудники.query.filter_by(роль='employee').all()
     
     return render_template('book_service.html', 
                          service=service,
