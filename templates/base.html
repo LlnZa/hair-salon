@@ -962,28 +962,29 @@
 <body>
     <!-- Навигационное меню -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}" style="font-family: 'Montserrat', sans-serif; font-size: 24px; letter-spacing: 2px; text-transform: uppercase;">LINZA</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-    {% if current_user.is_authenticated %}
-        {% if current_user.роль == 'client' %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('services') }}">Услуги</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('my_appointments') }}">Мои записи</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('visit_history') }}">Мои посещения</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('profile') }}">Личный кабинет</a>
-            </li>
-        {% endif %}
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}" style="font-family: 'Montserrat', sans-serif; font-size: 24px; letter-spacing: 2px; text-transform: uppercase;">LINZA</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.роль == 'client' %}
+                        <!-- Меню для клиентов -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('services') }}">Услуги</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('my_appointments') }}">Мои записи</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('visit_history') }}">Мои посещения</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('profile') }}">Личный кабинет</a>
+                        </li>
+                    {% endif %}
 
         {% if current_user.роль in ['admin', 'owner'] %}
                     
