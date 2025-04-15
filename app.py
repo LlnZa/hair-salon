@@ -1436,8 +1436,7 @@ def delete_service(service_id):
 # Маршруты для бухгалтера
 @app.route('/accountant/dashboard')
 @login_required
-def accountant_dashboard():
-    if current_user.роль != 'accountant':
+if current_user.роль not in ['accountant', 'owner']:
         flash('У вас нет прав для доступа к этой странице')
         return redirect(url_for('index'))
     
@@ -1473,31 +1472,37 @@ def accountant_dashboard():
         Услуги.название_услуги
     ).all()
     
-    # Получаем данные для графика (доходы и расходы по дням)
-    last_30_days = today - timedelta(days=30)
+    # Статистика по услугам за месяц
+    service_stats = db.session.query(
+        Услуги.название_услуги,
+        func.count(Записи.запись_id).label('count'),
+        func.sum(История_цен.новая_цена).label('total')
+    ).join(Записи, Записи.услуга_id == Услуги.услуга_id)\
+     .join(История_цен, История_цен.услуга_id == Услуги.услуга_id)\
+     .filter(Записи.дата_визита >= start_of_month)\
+     .group_by(Услуги.название_услуги)\
+     .all()
     
+    # Данные для графика доходов и расходов по дням (последние 30 дней)
+    last_30_days = today - timedelta(days=30)
     daily_income = db.session.query(
         func.date(Оплата.дата_оплаты).label('date'),
         func.sum(Оплата.сумма).label('sum')
-    ).filter(
-        Оплата.дата_оплаты >= last_30_days
-    ).group_by(
-        func.date(Оплата.дата_оплаты)
-    ).all()
+    ).filter(Оплата.дата_оплаты >= last_30_days)\
+     .group_by(func.date(Оплата.дата_оплаты))\
+     .all()
     
     daily_expenses = db.session.query(
         func.date(Расходы.дата).label('date'),
         func.sum(Расходы.сумма).label('sum')
-    ).filter(
-        Расходы.дата >= last_30_days
-    ).group_by(
-        func.date(Расходы.дата)
-    ).all()
+    ).filter(Расходы.дата >= last_30_days)\
+     .group_by(func.date(Расходы.дата))\
+     .all()
     
     # Подготовка данных для графика
     dates = [(today - timedelta(days=x)).strftime('%Y-%m-%d') for x in range(30)]
-    income_data = {str(date): sum for date, sum in daily_income}
-    expense_data = {str(date): sum for date, sum in daily_expenses}
+    income_data = {str(date): s for date, s in daily_income}
+    expense_data = {str(date): s for date, s in daily_expenses}
     
     chart_data = {
         'dates': dates,
@@ -1506,11 +1511,11 @@ def accountant_dashboard():
     }
     
     return render_template('accountant/dashboard.html',
-                         monthly_income=monthly_income,
-                         monthly_expenses=monthly_expenses,
-                         profit=profit,
-                         service_stats=service_stats,
-                         chart_data=chart_data)
+                           monthly_income=monthly_income,
+                           monthly_expenses=monthly_expenses,
+                           profit=profit,
+                           service_stats=service_stats,
+                           chart_data=chart_data)
 
 @app.route('/accountant/reports')
 @login_required
@@ -1534,54 +1539,36 @@ def generate_report():
     
     try:
         if report_type == 'income':
-            # Отчет по доходам
             data = db.session.query(
                 func.date(Оплата.дата_оплаты).label('date'),
                 func.sum(Оплата.сумма).label('total')
-            ).filter(
-                Оплата.дата_оплаты.between(start_date, end_date)
-            ).group_by(
-                func.date(Оплата.дата_оплаты)
-            ).order_by(
-                func.date(Оплата.дата_оплаты)
-            ).all()
-            
+            ).filter(Оплата.дата_оплаты.between(start_date, end_date))\
+             .group_by(func.date(Оплата.дата_оплаты))\
+             .order_by(func.date(Оплата.дата_оплаты))\
+             .all()
         elif report_type == 'services':
-            # Отчет по услугам
             data = db.session.query(
                 Услуги.название_услуги,
                 func.count(Записи.запись_id).label('count'),
                 func.sum(Оплата.сумма).label('total')
-            ).join(
-                Записи, Записи.услуга_id == Услуги.услуга_id
-            ).join(
-                Оплата, Оплата.запись_id == Записи.запись_id
-            ).filter(
-                Оплата.дата_оплаты.between(start_date, end_date)
-            ).group_by(
-                Услуги.услуга_id, Услуги.название_услуги
-            ).order_by(
-                func.sum(Оплата.сумма).desc()
-            ).all()
-            
+            ).join(Записи, Записи.услуга_id == Услуги.услуга_id)\
+             .join(Оплата, Оплата.запись_id == Записи.запись_id)\
+             .filter(Оплата.дата_оплаты.between(start_date, end_date))\
+             .group_by(Услуги.услуга_id, Услуги.название_услуги)\
+             .order_by(func.sum(Оплата.сумма).desc())\
+             .all()
         elif report_type == 'employees':
-            # Отчет по сотрудникам
             data = db.session.query(
                 Сотрудники.имя,
                 Сотрудники.фамилия,
                 func.count(Записи.запись_id).label('appointments_count'),
                 func.sum(Оплата.сумма).label('total_income')
-            ).join(
-                Записи, Записи.сотрудник_id == Сотрудники.сотрудник_id
-            ).join(
-                Оплата, Оплата.запись_id == Записи.запись_id
-            ).filter(
-                Оплата.дата_оплаты.between(start_date, end_date)
-            ).group_by(
-                Сотрудники.сотрудник_id, Сотрудники.имя, Сотрудники.фамилия
-            ).order_by(
-                func.sum(Оплата.сумма).desc()
-            ).all()
+            ).join(Записи, Записи.сотрудник_id == Сотрудники.сотрудник_id)\
+             .join(Оплата, Оплата.запись_id == Записи.запись_id)\
+             .filter(Оплата.дата_оплаты.between(start_date, end_date))\
+             .group_by(Сотрудники.сотрудник_id, Сотрудники.имя, Сотрудники.фамилия)\
+             .order_by(func.sum(Оплата.сумма).desc())\
+             .all()
         else:
             flash('Неверный тип отчета')
             return redirect(url_for('reports'))
@@ -1591,13 +1578,13 @@ def generate_report():
             return redirect(url_for('reports'))
         
         return render_template(f'accountant/reports/{report_type}.html',
-                             data=data,
-                             start_date=start_date,
-                             end_date=end_date)
-                             
+                               data=data,
+                               start_date=start_date,
+                               end_date=end_date)
     except Exception as e:
         flash(f'Ошибка при формировании отчета: {str(e)}')
         return redirect(url_for('reports'))
+
 
 @app.route('/accountant/expenses')
 @login_required
