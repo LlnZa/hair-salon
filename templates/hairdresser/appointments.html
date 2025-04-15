@@ -4,7 +4,11 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Мои записи</h2>
+    {% if current_user.роль == 'hairdresser' %}
+        <h2>Мои предстоящие записи</h2>
+    {% else %}
+        <h2>Мои записи</h2>
+    {% endif %}
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -43,4 +47,4 @@
     <p>У вас пока нет записей.</p>
     {% endif %}
 </div>
-{% endblock %} 
+{% endblock %}
