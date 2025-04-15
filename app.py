@@ -1438,71 +1438,83 @@ def delete_service(service_id):
 @login_required
 def accountant_dashboard():
     if current_user.роль not in ['accountant', 'owner']:
-        flash('У вас нет прав для доступа к этой странице')
+        flash('У вас нет прав для доступа к этой странице', 'danger')
         return redirect(url_for('index'))
     
-    # Далее идет логика получения данных для панели бухгалтера
+    # Получаем текущую дату и начало месяца
     today = datetime.now()
     start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
-    monthly_income = db.session.query(func.sum(Оплата.сумма)).filter(
-        Оплата.дата_оплаты >= start_of_month
-    ).scalar() or 0
-
-    monthly_expenses = db.session.query(func.sum(Расходы.сумма)).filter(
-        Расходы.дата >= start_of_month
-    ).scalar() or 0
-
+    # Доход за текущий месяц (сумма оплаченных платежей)
+    monthly_income = db.session.query(func.sum(Оплата.сумма))\
+        .filter(
+            Оплата.дата_оплаты >= start_of_month,
+            Оплата.статус_оплаты == 'оплачено'
+        ).scalar() or 0
+    
+    # Расходы за текущий месяц
+    monthly_expenses = db.session.query(func.sum(Расходы.сумма))\
+        .filter(
+            Расходы.дата >= start_of_month
+        ).scalar() or 0
+    
+    # Прибыль (разница дохода и расходов)
     profit = monthly_income - monthly_expenses
-
-    # Пример получения статистики по услугам (остальной код)
+    
+    # Получаем статистику по услугам за месяц: сколько раз оказывались и на какую сумму
+    # (Сумма может считаться как сумма фактических оплат или базовых цен, в зависимости от логики)
+    # Ниже пример сумм по фактически оплаченным услугам:
     service_stats = db.session.query(
-        Услуги.название_услуги,
+        Услуги.название_услуги.label('service_name'),
         func.count(Записи.запись_id).label('count'),
-        func.sum(История_цен.новая_цена).label('total')
-    ).join(
-        Записи, Записи.услуга_id == Услуги.услуга_id
-    ).join(
-        История_цен, История_цен.услуга_id == Услуги.услуга_id
-    ).filter(
-        Записи.дата_визита >= start_of_month
-    ).group_by(
-        Услуги.название_услуги
-    ).all()
+        func.sum(Оплата.сумма).label('total')
+    ).join(Записи, Записи.услуга_id == Услуги.услуга_id)\
+     .join(Оплата, Оплата.запись_id == Записи.запись_id)\
+     .filter(
+         Оплата.дата_оплаты >= start_of_month,
+         Оплата.статус_оплаты == 'оплачено'
+     )\
+     .group_by(Услуги.название_услуги)\
+     .order_by(func.sum(Оплата.сумма).desc())\
+     .all()
 
-    # Данные для графика
+    # Пример для графиков доход/расход по дням за последние 30 дней
     last_30_days = today - timedelta(days=30)
+    
     daily_income = db.session.query(
-        func.date(Оплата.дата_оплаты).label('date'),
+        func.date(Оплата.дата_оплаты).label('dt'),
         func.sum(Оплата.сумма).label('sum')
-    ).filter(Оплата.дата_оплаты >= last_30_days).group_by(
-        func.date(Оплата.дата_оплаты)
-    ).all()
-
+    ).filter(
+        Оплата.дата_оплаты >= last_30_days,
+        Оплата.статус_оплаты == 'оплачено'
+    ).group_by(func.date(Оплата.дата_оплаты)).all()
+    
     daily_expenses = db.session.query(
-        func.date(Расходы.дата).label('date'),
+        func.date(Расходы.дата).label('dt'),
         func.sum(Расходы.сумма).label('sum')
-    ).filter(Расходы.дата >= last_30_days).group_by(
-        func.date(Расходы.дата)
-    ).all()
-
+    ).filter(
+        Расходы.дата >= last_30_days
+    ).group_by(func.date(Расходы.дата)).all()
+    
+    # Переводим в удобный формат для шаблонов (дату -> строку, ключ -> сумма)
     dates = [(today - timedelta(days=x)).strftime('%Y-%m-%d') for x in range(30)]
-    income_data = {str(date): s for date, s in daily_income}
-    expense_data = {str(date): s for date, s in daily_expenses}
+    income_data_dict = {row.dt.strftime('%Y-%m-%d'): float(row.sum) for row in daily_income}
+    expense_data_dict = {row.dt.strftime('%Y-%m-%d'): float(row.sum) for row in daily_expenses}
     
     chart_data = {
         'dates': dates,
-        'income': [income_data.get(date, 0) for date in dates],
-        'expenses': [expense_data.get(date, 0) for date in dates]
+        'income': [income_data_dict.get(d, 0) for d in dates],
+        'expenses': [expense_data_dict.get(d, 0) for d in dates]
     }
     
-    return render_template('accountant/dashboard.html',
-                           monthly_income=monthly_income,
-                           monthly_expenses=monthly_expenses,
-                           profit=profit,
-                           service_stats=service_stats,
-                           chart_data=chart_data)
-
+    return render_template(
+        'accountant/dashboard.html',
+        monthly_income=monthly_income,
+        monthly_expenses=monthly_expenses,
+        profit=profit,
+        service_stats=service_stats,
+        chart_data=chart_data
+    )
 
 @app.route('/accountant/reports')
 @login_required
@@ -1771,11 +1783,10 @@ def salary_history(employee_id):
 @login_required
 def analytics():
     if current_user.роль not in ['accountant', 'owner']:
-        flash('У вас нет прав для доступа к этой странице')
+        flash('У вас нет прав для доступа к этой странице', 'danger')
         return redirect(url_for('index'))
     
     try:
-        # Получаем данные за последние 12 месяцев
         end_date = datetime.now()
         start_date = end_date - timedelta(days=365)
         
@@ -1784,53 +1795,56 @@ def analytics():
             func.date_trunc('month', Оплата.дата_оплаты).label('month'),
             func.sum(Оплата.сумма).label('total')
         ).filter(
-            Оплата.дата_оплаты.between(start_date, end_date)
+            Оплата.дата_оплаты.between(start_date, end_date),
+            Оплата.статус_оплаты == 'оплачено'
         ).group_by(
-            'month'
+            func.date_trunc('month', Оплата.дата_оплаты)
         ).order_by(
-            'month'
+            func.date_trunc('month', Оплата.дата_оплаты)
         ).all()
         
         # Популярные услуги
         popular_services = db.session.query(
-            Услуги.название_услуги,
+            Услуги.название_услуги.label('service_name'),
             func.count(Записи.запись_id).label('count'),
             func.sum(Оплата.сумма).label('total')
-        ).join(
-            Записи, Услуги.услуга_id == Записи.услуга_id
-        ).join(
-            Оплата, Оплата.запись_id == Записи.запись_id
-        ).filter(
-            Оплата.дата_оплаты.between(start_date, end_date)
-        ).group_by(
-            Услуги.услуга_id, Услуги.название_услуги
-        ).order_by(
-            func.count(Записи.запись_id).desc()
-        ).limit(5).all()
+        ).join(Записи, Записи.услуга_id == Услуги.услуга_id)\
+         .join(Оплата, Оплата.запись_id == Записи.запись_id)\
+         .filter(
+             Оплата.дата_оплаты.between(start_date, end_date),
+             Оплата.статус_оплаты == 'оплачено'
+         ).group_by(
+             Услуги.услуга_id, Услуги.название_услуги
+         ).order_by(
+             func.count(Записи.запись_id).desc()
+         ).limit(5).all()
         
-        # Статистика по филиалам
+        # Статистика по филиалам (сколько записей, какой доход)
         branch_stats = db.session.query(
-            Филиалы.название,
+            Филиалы.название.label('branch_name'),
             func.count(Записи.запись_id).label('appointments_count'),
             func.sum(Оплата.сумма).label('total_income')
-        ).join(
-            Записи, Записи.филиал_id == Филиалы.филиал_id
-        ).join(
-            Оплата, Оплата.запись_id == Записи.запись_id
-        ).filter(
-            Оплата.дата_оплаты.between(start_date, end_date)
-        ).group_by(
-            Филиалы.филиал_id, Филиалы.название
-        ).all()
+        ).join(Записи, Записи.филиал_id == Филиалы.филиал_id)\
+         .join(Оплата, Оплата.запись_id == Записи.запись_id)\
+         .filter(
+             Оплата.дата_оплаты.between(start_date, end_date),
+             Оплата.статус_оплаты == 'оплачено'
+         ).group_by(
+             Филиалы.филиал_id, Филиалы.название
+         ).order_by(
+             func.sum(Оплата.сумма).desc()
+         ).all()
         
-        return render_template('accountant/analytics.html',
-                             monthly_income=monthly_income,
-                             popular_services=popular_services,
-                             branch_stats=branch_stats)
-                             
+        return render_template(
+            'accountant/analytics.html',
+            monthly_income=monthly_income,
+            popular_services=popular_services,
+            branch_stats=branch_stats
+        )
     except Exception as e:
-        flash(f'Ошибка при получении данных: {str(e)}')
+        flash(f'Ошибка при получении данных: {str(e)}', 'danger')
         return redirect(url_for('index'))
+
 
 @app.route('/accountant/analytics/export/excel')
 @login_required
