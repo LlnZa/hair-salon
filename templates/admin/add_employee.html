@@ -74,12 +74,8 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="branch_id" class="form-label">Филиал <span class="text-danger">*</span></label>
-                            <select class="form-select" id="branch_id" name="branch_id" required>
-                                <option value="">-- Выберите филиал --</option>
-                                {% for branch in branches %}
-                                <option value="{{ branch.филиал_id }}">{{ branch.название }} - {{ branch.адрес }}</option>
-                                {% endfor %}
-                            </select>
+                             {{ form.branch_id(class="form-select") }}
+                        </div>
                         </div>
                     </div>
                     <div class="col-md-6">
