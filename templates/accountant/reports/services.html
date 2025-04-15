@@ -42,7 +42,7 @@
                                 <td>{{ row.название_услуги }}</td>
                                 <td class="text-center">{{ row.count }}</td>
                                 <td class="text-end">{{ "{:,.2f}".format(row.total) }} ₽</td>
-                                <td class="text-end">{{ "{:,.2f}".format(row.total / row.count) }} ₽</td>
+                                <td class="text-end">{{ "{:,.2f}".format(row.total / row.count) if row.count else "0.00" }} ₽</td>
                             </tr>
                         {% else %}
                             <tr>
