@@ -35,8 +35,9 @@ class Клиенты(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.пароль_хеш, password)
 
+    # Изменённый метод get_id – теперь с префиксом "client-"
     def get_id(self):
-        return str(self.клиент_id)
+        return f"client-{self.клиент_id}"
     
     def is_authenticated(self):
         return True
@@ -96,8 +97,9 @@ class Сотрудники(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.пароль_хеш, password)
 
+    # Изменённый метод get_id – теперь с префиксом "employee-"
     def get_id(self):
-        return str(self.сотрудник_id)
+        return f"employee-{self.сотрудник_id}"
     
     def is_authenticated(self):
         return True
