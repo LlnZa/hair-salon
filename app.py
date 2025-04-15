@@ -1436,28 +1436,26 @@ def delete_service(service_id):
 # Маршруты для бухгалтера
 @app.route('/accountant/dashboard')
 @login_required
-if current_user.роль not in ['accountant', 'owner']:
+def accountant_dashboard():
+    if current_user.роль not in ['accountant', 'owner']:
         flash('У вас нет прав для доступа к этой странице')
         return redirect(url_for('index'))
     
-    # Получаем текущую дату и начало месяца
+    # Далее идет логика получения данных для панели бухгалтера
     today = datetime.now()
     start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
-    # Получаем сумму доходов за текущий месяц
     monthly_income = db.session.query(func.sum(Оплата.сумма)).filter(
         Оплата.дата_оплаты >= start_of_month
     ).scalar() or 0
-    
-    # Получаем сумму расходов за текущий месяц
+
     monthly_expenses = db.session.query(func.sum(Расходы.сумма)).filter(
         Расходы.дата >= start_of_month
     ).scalar() or 0
-    
-    # Вычисляем прибыль
+
     profit = monthly_income - monthly_expenses
-    
-    # Получаем статистику по услугам за месяц
+
+    # Пример получения статистики по услугам (остальной код)
     service_stats = db.session.query(
         Услуги.название_услуги,
         func.count(Записи.запись_id).label('count'),
@@ -1471,35 +1469,23 @@ if current_user.роль not in ['accountant', 'owner']:
     ).group_by(
         Услуги.название_услуги
     ).all()
-    
-    # Статистика по услугам за месяц
-    service_stats = db.session.query(
-        Услуги.название_услуги,
-        func.count(Записи.запись_id).label('count'),
-        func.sum(История_цен.новая_цена).label('total')
-    ).join(Записи, Записи.услуга_id == Услуги.услуга_id)\
-     .join(История_цен, История_цен.услуга_id == Услуги.услуга_id)\
-     .filter(Записи.дата_визита >= start_of_month)\
-     .group_by(Услуги.название_услуги)\
-     .all()
-    
-    # Данные для графика доходов и расходов по дням (последние 30 дней)
+
+    # Данные для графика
     last_30_days = today - timedelta(days=30)
     daily_income = db.session.query(
         func.date(Оплата.дата_оплаты).label('date'),
         func.sum(Оплата.сумма).label('sum')
-    ).filter(Оплата.дата_оплаты >= last_30_days)\
-     .group_by(func.date(Оплата.дата_оплаты))\
-     .all()
-    
+    ).filter(Оплата.дата_оплаты >= last_30_days).group_by(
+        func.date(Оплата.дата_оплаты)
+    ).all()
+
     daily_expenses = db.session.query(
         func.date(Расходы.дата).label('date'),
         func.sum(Расходы.сумма).label('sum')
-    ).filter(Расходы.дата >= last_30_days)\
-     .group_by(func.date(Расходы.дата))\
-     .all()
-    
-    # Подготовка данных для графика
+    ).filter(Расходы.дата >= last_30_days).group_by(
+        func.date(Расходы.дата)
+    ).all()
+
     dates = [(today - timedelta(days=x)).strftime('%Y-%m-%d') for x in range(30)]
     income_data = {str(date): s for date, s in daily_income}
     expense_data = {str(date): s for date, s in daily_expenses}
@@ -1516,6 +1502,7 @@ if current_user.роль not in ['accountant', 'owner']:
                            profit=profit,
                            service_stats=service_stats,
                            chart_data=chart_data)
+
 
 @app.route('/accountant/reports')
 @login_required
