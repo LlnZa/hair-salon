@@ -1120,16 +1120,17 @@
 
         // Автоматическое скрытие алертов
         function setupAlerts() {
-            const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.classList.add('fade-out');
-                    setTimeout(() => {
-                        alert.remove();
-                    }, 300);
-                }, 3000);
-            });
-        }
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.classList.add('fade-out');
+            setTimeout(() => {
+                alert.remove();
+            }, 300);
+        }, 3000);
+    });
+}
+
 
         // Инициализация
         document.addEventListener('DOMContentLoaded', () => {
