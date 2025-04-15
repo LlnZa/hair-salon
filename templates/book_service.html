@@ -43,24 +43,24 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="branch_id" class="form-label">Филиал <span class="text-danger">*</span></label>
-                            <select class="form-select" id="branch_id" name="branch_id" required>
-                                <option value="">-- Выберите филиал --</option>
-                                {% for branch in branches %}
-                                <option value="{{ branch.филиал_id }}">{{ branch.название }} - {{ branch.адрес }}</option>
-                                {% endfor %}
-                            </select>
+                          <label for="branch_id" class="form-label">Филиал</label>
+                          <select class="form-select" id="branch_id" name="branch_id" required onchange="updateEmployees()">
+                            <option value="">-- Выберите филиал --</option>
+                            {% for branch in branches %}
+                              <option value="{{ branch.филиал_id }}">{{ branch.название }}</option>
+                            {% endfor %}
+                          </select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="employee_id" class="form-label">Мастер <span class="text-danger">*</span></label>
-                            <select class="form-select" id="employee_id" name="employee_id" required>
-                                <option value="">-- Выберите мастера --</option>
-                                {% for employee in employees %}
-                                <option value="{{ employee.сотрудник_id }}">{{ employee.фамилия }} {{ employee.имя }}</option>
-                                {% endfor %}
-                            </select>
+                          <label for="employee_id" class="form-label">Мастер</label>
+                          <select class="form-select" id="employee_id" name="employee_id" required>
+                            <option value="">-- Выберите мастера --</option>
+                            {% for employee in employees %}
+                              <option value="{{ employee.сотрудник_id }}">{{ employee.имя }} {{ employee.фамилия }}</option>
+                            {% endfor %}
+                          </select>
                         </div>
                     </div>
                 </div>
