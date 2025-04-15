@@ -39,8 +39,8 @@
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ url_for('edit_appointment', appointment_id=appointment.запись_id) }}" class="btn-edit">Редактировать</a>
-                                    <button type="button" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ appointment.запись_id }}">Удалить</button>
+                                    <a href="{{ url_for('edit_appointment', appointment_id=appointment.запись_id) }}" class="btn btn-primary btn-sm">Редактировать</a>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ appointment.запись_id }}">Удалить</button>
                                 </div>
                             </td>
                         </tr>
