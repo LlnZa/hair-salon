@@ -37,7 +37,7 @@
                             <td>{{ salary.дата_начала.strftime('%d.%m.%Y') }}</td>
                             <td>{{ "{:,.2f}".format(salary.базовая_ставка) }} ₽</td>
                             <td>{{ salary.процент_от_выручки }}%</td>
-                            <td>{{ salary.дата_создания.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>{{ salary.дата_начала.strftime('%d.%m.%Y %H:%M') }}</td>
                         </tr>
                         {% else %}
                         <tr>
