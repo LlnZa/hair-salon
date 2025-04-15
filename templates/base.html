@@ -1022,7 +1022,7 @@
             </li>
         {% endif %}
 
-        {% if current_user.роль in ['employee'] %}
+        {% if current_user.роль == 'employee' %}
                     
          <li class="nav-item">
             <a class="nav-link" href="{{ url_for('appointments') }}">Записи</a>
