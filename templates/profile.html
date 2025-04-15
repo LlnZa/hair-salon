@@ -42,8 +42,8 @@
                                 <label for="gender" class="form-label">Пол</label>
                                 <select class="form-select" id="gender" name="gender">
                                     <option value="">Выберите пол</option>
-                                    <option value="мужской" {% if current_user.пол == 'мужской' %}selected{% endif %}>Мужской</option>
-                                    <option value="женский" {% if current_user.пол == 'женский' %}selected{% endif %}>Женский</option>
+                                    <option value="М" {% if current_user.пол == 'М' %}selected{% endif %}>Мужской</option>
+                                    <option value="Ж" {% if current_user.пол == 'Ж' %}selected{% endif %}>Женский</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
