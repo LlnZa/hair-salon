@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from config import Config
-from models import db, Клиенты, Сотрудники, Филиалы, Услуги, Записи, История_цен, Оплата, Расходы, Зарплаты, Отзывы
+from models import db, Клиенты, Сотрудники, Филиалы, Услуги, Записи, История_цен, Оплата, Расходы, Зарплаты
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, PasswordField, SubmitField, DateField, SelectField
