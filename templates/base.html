@@ -97,7 +97,7 @@
             height: 0;
         }
 
-        .slider {
+        .theme-switch label.slider {
             position: absolute;
             cursor: pointer;
             top: 0;
@@ -109,7 +109,7 @@
             border-radius: 30px;
         }
 
-        .slider:before {
+        .theme-switch label.slider:before {
             position: absolute;
             content: "";
             height: 22px;
@@ -121,11 +121,11 @@
             border-radius: 50%;
         }
 
-        input:checked + .slider {
+        input:checked + label.slider {
             background-color: var(--accent-color);
         }
 
-        input:checked + .slider:before {
+        input:checked + label.slider:before {
             transform: translateX(30px);
         }
 
@@ -1042,7 +1042,7 @@
     {% endif %}
                 <div class="theme-switch">
                   <input type="checkbox" id="theme-toggle">
-                  <span class="slider"></span>
+                  <label for="theme-toggle" class="slider"></label>
                   <i class="bi bi-sun"></i>
                   <i class="bi bi-moon"></i>
                 </div>
