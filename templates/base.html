@@ -997,6 +997,7 @@
                     <li><a class="dropdown-item" href="{{ url_for('admin_employees') }}">Сотрудники</a></li>
                     <li><a class="dropdown-item" href="{{ url_for('admin_branches') }}">Филиалы</a></li>
                     <li><a class="dropdown-item" href="{{ url_for('clients') }}">Клиенты</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('appointments') }}">Записи</a><li>
                 </ul>
             </li>
         {% endif %}
@@ -1018,7 +1019,7 @@
             </li>
         {% endif %}
 
-        {% if current_user.роль in ['admin', 'employee', 'owner'] %}
+        {% if current_user.роль in ['employee'] %}
                     
          <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('appointments') }}">Записи</a>
