@@ -32,10 +32,10 @@
                                             <td>{{ client.телефон }}</td>
                                             <td>{{ client.дата_регистрации.strftime('%d.%m.%Y') }}</td>
                                             <td>
-                                                <a href="{{ url_for('edit_client', client_id=client.клиент_id) }}" class="btn btn-sm btn-info">Редактировать</a>
+                                                <a href="{{ url_for('edit_client', client_id=client.клиент_id) }}" class="btn-edit">Редактировать</a>
                                                 <form action="{{ url_for('delete_client', client_id=client.клиент_id) }}" method="POST" class="d-inline">
                                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены, что хотите удалить этого клиента?')">Удалить</button>
+                                                    <button type="submit" class="btn-delete" onclick="return confirm('Вы уверены, что хотите удалить этого клиента?')">Удалить</button>
                                                 </form>
                                             </td>
                                         </tr>
