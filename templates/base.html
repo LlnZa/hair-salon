@@ -1040,7 +1040,13 @@
             <a class="nav-link" href="{{ url_for('branches') }}">Филиалы</a>
         </li>
     {% endif %}
-</ul>
+                <div class="theme-switch">
+                  <input type="checkbox" id="theme-toggle">
+                  <span class="slider"></span>
+                  <i class="bi bi-sun"></i>
+                  <i class="bi bi-moon"></i>
+                </div>
+            </ul>
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
