@@ -61,23 +61,7 @@ body {
     font-weight: 600;
 }
 
-/* Button Styles */
-.btn {
-    border-radius: 5px;
-    padding: 0.5rem 1.5rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
 
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-    background-color: #3a5a8c;
-    border-color: #3a5a8c;
-}
 
 /* Table Styles */
 .table {
@@ -257,37 +241,11 @@ body {
     color: white;
 } 
 
-/* Универсальные стили для кнопок действий */
-.btn-action {
-    border-radius: 5px;
-    padding: 0.6rem 1.2rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    min-width: 120px;
-}
 
-/* Примеры для основных вариантов */
-.btn-action.btn-primary {
-    background-color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    color: white;
-}
 
-.btn-action.btn-primary:hover {
-    background-color: #3a5a8c;
-    border-color: #3a5a8c;
-}
 
-.btn-action.btn-danger {
-    background-color: var(--danger-color);
-    border: 1px solid var(--danger-color);
-    color: white;
-}
 
-.btn-action.btn-danger:hover {
-    background-color: #c82333;
-    border-color: #bd2130;
-}
+
 
 /* Универсальные стили для кнопок редактирования */
 .btn-edit {
