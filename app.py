@@ -100,19 +100,17 @@ def schedule_reminder(appointment):
 @login_manager.user_loader
 def load_user(user_id):
     try:
-        # Сначала пробуем найти сотрудника
-        employee = Сотрудники.query.filter_by(сотрудник_id=int(user_id)).first()
-        if employee:
-            return employee
-        
-        # Если не нашли сотрудника, ищем клиента
-        client = Клиенты.query.filter_by(клиент_id=int(user_id)).first()
-        if client:
-            return client
-            
+        # Разбиваем строковый идентификатор на префикс и реальный id
+        user_type, real_id = user_id.split('-', 1)
+        if user_type == 'employee':
+            return Сотрудники.query.get(int(real_id))
+        elif user_type == 'client':
+            return Клиенты.query.get(int(real_id))
+        else:
+            return None
+    except Exception as e:
         return None
-    except ValueError:
-        return None
+
 
 # Маршруты
 @app.route('/')
