@@ -188,13 +188,3 @@ class Зарплаты(db.Model):
     def __repr__(self):
         return f'<Зарплата {self.сотрудник.имя}: {self.базовая_ставка}₽ + {self.процент_от_выручки}%>'
 
-class Отзывы(db.Model):
-    __tablename__ = 'отзывы'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    клиент_id = db.Column(db.Integer, db.ForeignKey('клиенты.клиент_id'), nullable=False)
-    текст = db.Column(db.Text, nullable=False)
-    оценка = db.Column(db.Integer, nullable=False)
-    дата = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    клиент = db.relationship('Клиенты', backref=db.backref('отзывы', lazy=True)) 
