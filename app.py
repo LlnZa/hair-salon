@@ -358,6 +358,23 @@ def is_working_time(dt):
     else:  # Пн-Пт
         return 10 <= hour < 21
 
+
+@app.route('/get_employees/<int:branch_id>')
+def get_employees(branch_id):
+    # Предполагается, что мастера – это сотрудники с ролью 'employee'
+    employees = Сотрудники.query.filter_by(филиал_id=branch_id, роль='employee').all()
+    # Формируем список словарей для JSON
+    employees_list = [{
+        'id': employee.сотрудник_id,
+        'name': f"{employee.имя} {employee.фамилия}"
+    } for employee in employees]
+    return jsonify(employees_list)
+
+
+
+
+
+
 @app.route('/book_service/<int:service_id>', methods=['GET', 'POST'])
 def book_service(service_id):
     service = Услуги.query.get_or_404(service_id)
