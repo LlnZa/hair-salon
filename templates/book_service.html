@@ -92,7 +92,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Устанавливаем минимальную дату на текущий момент
+    // Устанавливаем минимальную дату на текущий момент для поля визита
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -103,8 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('visit_date').min = `${year}-${month}-${day}T${hours}:${minutes}`;
 });
 </script>
-{% endblock %} 
+{% endblock %}
 
+{% block scripts %}
 <script>
 function updateEmployees() {
     var branchSelect = document.getElementById('branch_id');
@@ -112,7 +113,7 @@ function updateEmployees() {
     var branchId = branchSelect.value;
     
     // Если филиал не выбран, сбрасываем список мастеров
-    if(!branchId) {
+    if (!branchId) {
         employeeSelect.innerHTML = '<option value="">-- Выберите мастера --</option>';
         return;
     }
@@ -135,4 +136,4 @@ function updateEmployees() {
       });
 }
 </script>
-
+{% endblock %}
