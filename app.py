@@ -557,9 +557,9 @@ def appointments():
 @app.route('/payments')
 @login_required
 def payments():
-    if current_user.роль not in ['admin', 'employee', 'owner']:
-        flash('У вас нет прав для доступа к этой странице')
-        return redirect(url_for('index'))
+    if current_user.роль not in ['admin', 'employee', 'owner', 'accountant']:
+    flash('У вас нет прав для доступа к этой странице')
+    return redirect(url_for('index'))
     
     payments = db.session.query(Оплата, Записи).join(Записи).order_by(Оплата.дата_оплаты.desc()).all()
     return render_template('admin/payments.html', payments=payments)
@@ -703,9 +703,9 @@ def clients():
 @app.route('/admin/clients/add', methods=['GET', 'POST'])
 @login_required
 def add_client():
-    if current_user.роль != 'admin':
-        flash('У вас нет прав для доступа к этой странице')
-        return redirect(url_for('index'))
+    if current_user.роль not in ['accountant', 'owner']:
+    flash('У вас нет прав для доступа к этой странице')
+    return redirect(url_for('index'))
     
     if request.method == 'POST':
         try:
@@ -785,9 +785,9 @@ def delete_client(client_id):
 @app.route('/admin/add_employee', methods=['GET', 'POST'])
 @login_required
 def add_employee():
-    if current_user.роль != 'admin':
-        flash('У вас нет прав для доступа к этой странице', 'danger')
-        return redirect(url_for('index'))
+    if current_user.роль not in ['admin', 'owner']:
+    flash('У вас нет прав для доступа к этой странице', 'danger')
+    return redirect(url_for('index'))
     
     form = AddEmployeeForm()
     form.branch_id.choices = [(b.филиал_id, b.название) for b in Филиалы.query.all()]
