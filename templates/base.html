@@ -1121,7 +1121,7 @@
 
         // Автоматическое скрытие алертов
       function setupAlerts() {
-    const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
+    const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         setTimeout(() => {
             alert.classList.add('fade-out');
