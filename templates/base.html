@@ -982,6 +982,9 @@
                             <a class="nav-link" href="{{ url_for('visit_history') }}">Мои посещения</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('branches') }}">Филиалы</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('profile') }}">Личный кабинет</a>
                         </li>
                     {% endif %}
@@ -1022,13 +1025,11 @@
         {% if current_user.роль in ['employee'] %}
                     
          <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('appointments') }}">Записи</a>
-            </li>
-            {% if current_user.роль == 'employee' and current_user.должность|lower == 'hairdresser' %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('hairdresser_past_appointments') }}">Выполненные записи</a>
-                </li>
-            {% endif %}
+            <a class="nav-link" href="{{ url_for('appointments') }}">Записи</a>
+        </li>
+         <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('hairdresser_past_appointments') }}">Выполненные записи</a>
+        </li>
         {% endif %}
     {% else %}
         <!-- Если пользователь не авторизован -->
