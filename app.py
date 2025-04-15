@@ -1529,59 +1529,101 @@ def reports():
 @login_required
 def generate_report():
     if current_user.роль not in ['accountant', 'owner']:
-        flash('У вас нет прав для доступа к этой странице')
+        flash('У вас нет прав для доступа к этой странице', 'danger')
         return redirect(url_for('index'))
     
-    report_type = request.form.get('report_type')
-    start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
-    end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')
+    report_type = request.form.get('report_type')  # 'income' / 'services' / 'employees'
+    start_date_str = request.form.get('start_date')
+    end_date_str = request.form.get('end_date')
+    
+    if not (report_type and start_date_str and end_date_str):
+        flash('Пожалуйста, заполните все поля отчёта', 'danger')
+        return redirect(url_for('reports'))
     
     try:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+    except ValueError:
+        flash('Неверный формат дат', 'danger')
+        return redirect(url_for('reports'))
+    
+    # Логика формирования отчёта
+    try:
         if report_type == 'income':
+            # Отчёт по доходам
             data = db.session.query(
-                func.date(Оплата.дата_оплаты).label('date'),
+                func.date(Оплата.дата_оплаты).label('dt'),
                 func.sum(Оплата.сумма).label('total')
-            ).filter(Оплата.дата_оплаты.between(start_date, end_date))\
-             .group_by(func.date(Оплата.дата_оплаты))\
-             .order_by(func.date(Оплата.дата_оплаты))\
-             .all()
+            ).filter(
+                Оплата.дата_оплаты.between(start_date, end_date),
+                Оплата.статус_оплаты == 'оплачено'
+            ).group_by(
+                func.date(Оплата.дата_оплаты)
+            ).order_by(
+                func.date(Оплата.дата_оплаты)
+            ).all()
+            
+            return render_template(
+                'accountant/reports/income.html',
+                data=data,
+                start_date=start_date,
+                end_date=end_date
+            )
+        
         elif report_type == 'services':
+            # Отчёт по услугам
             data = db.session.query(
-                Услуги.название_услуги,
+                Услуги.название_услуги.label('service_name'),
                 func.count(Записи.запись_id).label('count'),
                 func.sum(Оплата.сумма).label('total')
             ).join(Записи, Записи.услуга_id == Услуги.услуга_id)\
              .join(Оплата, Оплата.запись_id == Записи.запись_id)\
-             .filter(Оплата.дата_оплаты.between(start_date, end_date))\
-             .group_by(Услуги.услуга_id, Услуги.название_услуги)\
-             .order_by(func.sum(Оплата.сумма).desc())\
-             .all()
+             .filter(
+                 Оплата.дата_оплаты.between(start_date, end_date),
+                 Оплата.статус_оплаты == 'оплачено'
+             ).group_by(
+                 Услуги.услуга_id, Услуги.название_услуги
+             ).order_by(
+                 func.count(Записи.запись_id).desc()
+             ).all()
+            
+            return render_template(
+                'accountant/reports/services.html',
+                data=data,
+                start_date=start_date,
+                end_date=end_date
+            )
+        
         elif report_type == 'employees':
+            # Отчёт по сотрудникам
             data = db.session.query(
-                Сотрудники.имя,
-                Сотрудники.фамилия,
+                Сотрудники.имя.label('first_name'),
+                Сотрудники.фамилия.label('last_name'),
                 func.count(Записи.запись_id).label('appointments_count'),
                 func.sum(Оплата.сумма).label('total_income')
             ).join(Записи, Записи.сотрудник_id == Сотрудники.сотрудник_id)\
              .join(Оплата, Оплата.запись_id == Записи.запись_id)\
-             .filter(Оплата.дата_оплаты.between(start_date, end_date))\
-             .group_by(Сотрудники.сотрудник_id, Сотрудники.имя, Сотрудники.фамилия)\
-             .order_by(func.sum(Оплата.сумма).desc())\
-             .all()
+             .filter(
+                 Оплата.дата_оплаты.between(start_date, end_date),
+                 Оплата.статус_оплаты == 'оплачено'
+             ).group_by(
+                 Сотрудники.сотрудник_id, Сотрудники.имя, Сотрудники.фамилия
+             ).order_by(
+                 func.sum(Оплата.сумма).desc()
+             ).all()
+            
+            return render_template(
+                'accountant/reports/employees.html',
+                data=data,
+                start_date=start_date,
+                end_date=end_date
+            )
+        
         else:
-            flash('Неверный тип отчета')
+            flash('Неверный тип отчёта', 'danger')
             return redirect(url_for('reports'))
-        
-        if not data:
-            flash('Нет данных за выбранный период')
-            return redirect(url_for('reports'))
-        
-        return render_template(f'accountant/reports/{report_type}.html',
-                               data=data,
-                               start_date=start_date,
-                               end_date=end_date)
     except Exception as e:
-        flash(f'Ошибка при формировании отчета: {str(e)}')
+        flash(f'Ошибка при формировании отчёта: {str(e)}', 'danger')
         return redirect(url_for('reports'))
 
 
