@@ -47,7 +47,7 @@
                                     <td>{{ service.категория_пола }}</td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="{{ url_for('edit_employee', employee_id=employee.сотрудник_id) }}" class="btn-edit">
+                                            <a href="{{ url_for('edit_service', service_id=service.услуга_id) }}" class="btn-edit">
                                                 <i class="fas fa-edit"></i> Редактировать
                                             </a>
                                             <button type="button" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ employee.сотрудник_id }}">
